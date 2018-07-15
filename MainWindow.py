@@ -6,14 +6,12 @@ LARGE_FONT = ("Arial Black", 12)
 
 
 class MainWindow(tk.Frame):
-    users = {}
-    user_list = None
-
     def __init__(self, parent, controller, pdb):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.controller = controller
         self.pdb = pdb
+        self.users = {}
         self.draw()
 
     def draw(self):
@@ -52,7 +50,11 @@ class MainWindow(tk.Frame):
 
     def edit_user(self):
         print("Edit user button pushed")
-        print("Trying to edit", self.user_list.get(self.user_list.curselection()))
+        if self.user_list.curselection(): 
+            print("Trying to edit", self.user_list.get(self.user_list.curselection()))
+            print(self.users[self.user_list.get(self.user_list.curselection())])
+            self.controller.show_add_or_edit_user_window(self.users[self.user_list.get(self.user_list.curselection())])
+
 
     def enable_protection(self):
         print("Enable protection button pushed")

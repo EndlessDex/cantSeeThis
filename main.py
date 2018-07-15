@@ -42,9 +42,18 @@ class CantSeeThisApp(tk.Tk):
         frame.tkraise()
 
     def show_mainWindow(self): 
-    	frame = self.frames[mw.MainWindow]
-    	frame.refresh_user_list()
-    	frame.tkraise()
+        frame = self.frames[mw.MainWindow]
+        frame.refresh_user_list()
+        frame.tkraise()
+
+    def show_add_or_edit_user_window(self, employeeId = 0): 
+        frame = self.frames[aw.AddOrEditUserWindow]
+        if employeeId: 
+            frame.load_user(employeeId)
+        else: 
+            frame.refresh_window()
+            #Add User
+        frame.tkraise()
 
 app = CantSeeThisApp()
 app.mainloop()
