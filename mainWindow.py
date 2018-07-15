@@ -1,6 +1,4 @@
 import tkinter as tk
-import AddOrEditUserWindow as aw
-
 
 LARGE_FONT = ("Arial Black", 12)
 
@@ -10,9 +8,9 @@ class MainWindow(tk.Frame):
     user_list = None
 
     def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
         self.parent = parent
         self.controller = controller
-        tk.Frame.__init__(self, parent)
         self.draw()
 
     def draw(self):
@@ -46,8 +44,6 @@ class MainWindow(tk.Frame):
 
     def add_user(self):
         print("Add user pushed")
-        window = tk.Toplevel(self.parent)
-        aw.AddOrEditUserWindow(self)
 
     def remove_user(self):
         print("Remove user button pushed")
