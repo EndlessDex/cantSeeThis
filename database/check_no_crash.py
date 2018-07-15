@@ -16,24 +16,30 @@ if pdb.has_permission(11, "Not a permission foobar"):
     print("fail: Permission Name should not exist.")
 
 # Try to give 11 clearance:
-pdb.set_person_permission(11, "Secret")
+pdb.set_person_permission(11, "Secret", disable_sync=True)
 
 if not pdb.has_permission(11, "Secret"):
     print("fail: 11 should now have Secret clearance.")
 
-pdb.remove_person_permission(11, "Secret")
+pdb.remove_person_permission(11, "Secret", disable_sync=True)
 if pdb.has_permission(11, "Secret"):
     print("fail: ID 11 should no longer have secret clearance.")
 
 # Try to remove 11:
-pdb.remove_person(11)
+pdb.remove_person(11, disable_sync=True)
 if 11 in [y for x, y in pdb.get_people()]:
     print("fail: ID 11 should have been removed")
 if pdb.has_permission(11, "None"):
     print("fail: ID 11 should no longer have any clearance.")
 
-pdb.add_person(11, facedata=000, permissions=("None",), name="Person B")
+pdb.add_person(11, facedata=000, permissions=("None",), name="Person B", disable_sync=True)
 if 11 not in [y for x, y in pdb.get_people()]:
     print("fail: ID 11 should have been added")
 if not pdb.has_permission(11, "None"):
     print("fail: ID 11 should have clearance again.")
+
+pdb.edit_user_name(11, "Person D", disable_sync=True)
+if "Person D" not in [x for x, y in pdb.get_people()]:
+    print("fail: ID 11 name not edited")
+if "Person B" in [x for x, y in pdb.get_people()]:
+    print("fail: ID 11 old name still there.")

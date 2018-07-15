@@ -51,7 +51,11 @@ class PeopleDatabase:
         person_has_permission = self.clearance_db[permission] == num
         return not self.clearance_db[person_has_permission].empty
 
-    def set_person_permission(self, person, permission, remove=False):
+    def get_person_permissions(self, num):
+        return [permission for permission in self.get_permissions() if self.has_permission(num, permission)]
+
+
+    def set_person_permission(self, person, permission, remove=False, **kwargs):
         """
         Sets permission for a person (ID). If remove is True it removes that permission for person.
         Person and permission must exist.
@@ -60,6 +64,7 @@ class PeopleDatabase:
         :param remove: If True: un-sets permission for person. If False, sets permission for person.
         :return: True on success.
         """
+        # TODO does not do permission remap.
         if remove:
             return self.remove_person_permission(person, permission)
 
@@ -82,16 +87,16 @@ class PeopleDatabase:
 
         self.clearance_db.ix[nanidx, permission] = person
 
-        self._sync()
-        return
+        return self._sync(**kwargs)
 
-    def remove_person_permission(self, person, permission):
+    def remove_person_permission(self, person, permission, **kwargs):
         """
         Removes a permission from a person.
         :param person: ID of person.
         :param permission: Name of permission.
         :return: True if succeed.
         """
+        #TODO does not remap permissions.
         # Check that permission exists:
         if permission not in self.clearance_db.columns:
             return False
@@ -105,12 +110,13 @@ class PeopleDatabase:
         personidx = clearance_col.index[clearance_col == person][0]
         self.clearance_db.ix[personidx, permission] = np.nan
 
-        self._sync()
+        return self._sync(**kwargs)
 
-    def add_person(self, num, name, facedata, permissions=()):
+    def add_person(self, num, name, facedata, permissions=(), **kwargs):
         """
         Adds a new person with names of permission belonging to.
-        :param  num: ID Number
+        :param  num: ID Number as int.
+        :param name: String name of person.
         :param facedata: data used to recognize person.
         :param permissions: List of permission categories to add to.
         :return: True if successful. No changes are written if failed.
@@ -118,6 +124,9 @@ class PeopleDatabase:
         # If permissions is not iterable, then put it inside of an iterable.
         if not hasattr(permissions, "__iter__") or type(permissions) is str:
             permissions = (permissions, )
+
+        # TODO burn this code with fire.
+        permissions = remap_permissions_add(permissions)
 
         # Verify that all permissions exist.
         for permission in permissions:
@@ -151,10 +160,9 @@ class PeopleDatabase:
                                                ignore_index=True)
 
         # Write to disk.
-        self._sync()
-        pass
+        return self._sync(**kwargs)
 
-    def remove_person(self, person):
+    def remove_person(self, person, **kwargs):
         """
         Removes a person from the pandas table.
         :param person: ID of person to remove.
@@ -167,16 +175,16 @@ class PeopleDatabase:
         # Remove the row corresponding to the nan.
         self.people_db = self.people_db.dropna()
 
-        self._sync()
-        pass
+        return self._sync(**kwargs)
 
-    def add_permission(self, permission, people=()):
+    def add_permission(self, permission, people=(), **kwargs):
         """
         Adds a new permission category with names of people to add.
         :param permission: Name of permission.
         :param people: List of people (by ID Number) to add.
         :return: True if successful. No changes written on failure.
         """
+        # TODO does not work with remap permissions.
         # If people is not iterable, then put it inside of an iterable.
         if not hasattr(people, "__iter__") or type(people) is str:
             people = (people,)
@@ -196,12 +204,55 @@ class PeopleDatabase:
         # Combine with existing dataFrame
         self.clearance_db = pd.concat([self.clearance_db, dfnew], axis=1)
 
-        self._sync()
-        pass
+        return self._sync(**kwargs)
 
-    def _sync(self):
+    def edit_user_name(self, user_id, new_name, **kwargs):
+        # Verify that num already exists.
+        if self.people_db["numbers"][self.people_db["numbers"] == user_id].empty:
+            return False
+
+        ids_col = self.people_db["numbers"]
+
+        # Now find the person and replace with NaN.
+        personidx = ids_col.index[ids_col == user_id][0]
+        self.people_db.ix[personidx, "names"] = new_name
+
+        return self._sync(**kwargs)
+
+    def _sync(self, disable_sync=False):
         """
         Writes any changes back to file on disk.
         :return: True on success. Hopefully no changes written on failure.
         """
-        pass
+        if disable_sync:
+            return True
+
+        writer = pd.ExcelWriter(self.db_name)
+        self.clearance_db.to_excel(writer, sheet_name=clearanceIdx, index=False, header=True)
+        self.people_db.to_excel(writer, sheet_name=namesIdx, index=False, header=True)
+        writer.save()
+
+        # Gotta love always succeeds. Perfectly safe.
+        return True
+
+
+def permission_to_num(permission):
+    if permission == "None":
+        return 0
+    if permission == "Secret":
+        return 1
+    if permission == "Top-secret":
+        return 2
+
+
+def remap_permissions_add(permissions):
+    if len(permissions) > 1:
+        return permissions
+
+    if "Top-secret" == permissions[0]:
+        return ["None", "Secret", "Top-secret"]
+
+    if "Secret" == permissions[0]:
+        return ["None", "Secret"]
+
+    return permissions
