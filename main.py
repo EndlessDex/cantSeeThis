@@ -1,5 +1,6 @@
 import tkinter as tk
-import MainWindow
+# import MainWindow
+import AddOrEditUserWindow
 
 class CantSeeThisApp(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -7,8 +8,8 @@ class CantSeeThisApp(tk.Tk):
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
 
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        container.grid_rowconfigure(1, weight=1)
+        container.grid_columnconfigure(1, weight=1)
 
         self.frames = {}
 
@@ -17,10 +18,10 @@ class CantSeeThisApp(tk.Tk):
 #            self.frames[F] = frame
 #            frame.grid(row=0, column=0, sticky="nsew")
 
-        frame = MainWindow(container, self)
-        self.frames[MainWindow] = frame
-        frame.grid(row=0, column=0, sticky="nsew")
-        self.show_frame(MainWindow)
+        frame = AddOrEditUserWindow.AddOrEditUserWindow(container, self)
+        self.frames[AddOrEditUserWindow] = frame
+        frame.grid(row=0, column=0)
+        self.show_frame(AddOrEditUserWindow)
 
     def show_frame(self, cont):
 
@@ -29,4 +30,5 @@ class CantSeeThisApp(tk.Tk):
 
 
 app = CantSeeThisApp()
+# app.geometry("500x500")
 app.mainloop()
