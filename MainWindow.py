@@ -6,7 +6,7 @@ LARGE_FONT = ("Arial Black", 12)
 
 
 class MainWindow(tk.Frame):
-    users = {"John Doe": "John Doe", "Jane Smith": "Jane Smith", "Someother Guy": "Someother Guy"}
+    users = {}
     user_list = None
 
     def __init__(self, parent, controller, pdb):
@@ -44,12 +44,11 @@ class MainWindow(tk.Frame):
         enable_button = tk.Button(self, text="Enable Protection", command=self.enable_protection)
         enable_button.grid(row=3, column=1, padx=1, pady=10)
 
-    def add_user(self):
-        print("Add user pushed")
-
     def remove_user(self):
-        print("Remove user button pushed")
-        self.user_list.delete(self.user_list.curselection())
+        selected = self.user_list.curselection()
+        self.pdb.remove_person(self.users[selected])
+        del self.users[selected]
+        self.user_list.delete(selected)
 
     def edit_user(self):
         print("Edit user button pushed")
@@ -58,6 +57,12 @@ class MainWindow(tk.Frame):
     def enable_protection(self):
         print("Enable protection button pushed")
 
+    def refresh_user_list(self):
+        for user in self.users:
+            self.user_list.delete(user[0])
+        self._fill_user_list()
+
     def _fill_user_list(self):
         for user in self.pdb.get_people():
+            self.users[user[0]] = user[1]
             self.user_list.insert(0, user[0])
