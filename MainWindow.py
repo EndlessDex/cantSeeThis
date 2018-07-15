@@ -1,5 +1,6 @@
 import tkinter as tk
 import AddOrEditUserWindow as aw
+from database.PeopleDatabase import PeopleDatabase
 
 LARGE_FONT = ("Arial Black", 12)
 
@@ -8,10 +9,11 @@ class MainWindow(tk.Frame):
     users = {"John Doe": "John Doe", "Jane Smith": "Jane Smith", "Someother Guy": "Someother Guy"}
     user_list = None
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, pdb):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.controller = controller
+        self.pdb = pdb
         self.draw()
 
     def draw(self):
@@ -21,7 +23,6 @@ class MainWindow(tk.Frame):
 
         # user list
         scrollbar = tk.Scrollbar(self, orient="vertical")
-
 
         self.user_list = tk.Listbox(self, height=10, width=36, yscrollcommand=scrollbar.set, selectmode=tk.SINGLE)
         self._fill_user_list()
@@ -58,5 +59,5 @@ class MainWindow(tk.Frame):
         print("Enable protection button pushed")
 
     def _fill_user_list(self):
-        for user in self.users.keys():
-            self.user_list.insert(0, user)
+        for user in self.pdb.get_people():
+            self.user_list.insert(0, user[0])
