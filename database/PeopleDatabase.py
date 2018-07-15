@@ -55,23 +55,27 @@ class PeopleDatabase:
         """
         Sets permission for a person (ID). If remove is True it removes that permission for person.
         Person and permission must exist.
-        :param person:
-        :param permission:
-        :param remove:
+        :param person: ID for a user.
+        :param permission: Permission to change.
+        :param remove: If True: un-sets permission for person. If False, sets permission for person.
         :return: True on success.
         """
         if remove:
             return self.remove_person_permission(person, permission)
 
-        # TODO check that person and permission exists.
+        # check that person and permission exist.
+        if permission not in self.clearance_db.columns:
+            return False
+
+        if self.people_db["numbers"][self.people_db["numbers"] == person].empty:
+            return False
 
         # Check if nan is in that permission and fill it in:
         if not self.clearance_db[permission].hasnans:
             # No Nans, so append a row to the DB
             self.clearance_db = self.clearance_db.append(Series([np.nan],
-                                                                   index=[permission]),
+                                                         index=[permission]),
                                                          ignore_index=True)
-
         # Now find the nan and replace with the
         nanidx = self.clearance_db[permission] \
             .index[pd.isnull(self.clearance_db[permission])][0]
@@ -103,7 +107,7 @@ class PeopleDatabase:
 
         self._sync()
 
-    def add_person(self, num, facedata, permissions=()):
+    def add_person(self, num, name, facedata, permissions=()):
         """
         Adds a new person with names of permission belonging to.
         :param  num: ID Number
@@ -140,7 +144,11 @@ class PeopleDatabase:
 
             self.clearance_db.ix[nanidx, permission] = num
 
-        # Add person and facedata to an array somewhere.
+        # Add person, name and facedata to the people array.
+        # No Nans, so append a row to the DB
+        self.people_db = self.people_db.append(Series([name, num, facedata],
+                                               index=["names", "numbers", "bin"]),
+                                               ignore_index=True)
 
         # Write to disk.
         self._sync()
@@ -177,7 +185,10 @@ class PeopleDatabase:
         if permission in self.clearance_db.columns:
             return False
 
-        # TODO Verify that all the people are in the people database.
+        # Verify that all the people are in the people database.
+        for personId in people:
+            if self.people_db["numbers"][self.people_db["numbers"] == personId].empty:
+                return False
 
         # Create a new dataFrame
         dfnew = df({permission: list(people)})
