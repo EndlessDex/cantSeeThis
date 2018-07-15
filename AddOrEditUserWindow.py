@@ -1,18 +1,22 @@
 import tkinter as tk 
+import MainWindow as mw
 
 class AddOrEditUserWindow(tk.Frame): 
 	def __init__(self, parent, controller):	
 		tk.Frame.__init__(self, parent)
 		print("init function")
+		self.controller = controller
 		self.firstName = tk.StringVar() 
 		self.lastName = tk.StringVar()
 		self.classificationEntry = tk.StringVar()
 		self.createTextFields()	
 		self.create_widgets()
+		self.create_back_button()
+		self.create_save_button()
 
 	def create_widgets(self): 
 		train_the_algorithm = tk.Button(self, text="Train the Algorithm", command=self.trainButton)
-		train_the_algorithm.grid(row=3, columnspan=3)
+		train_the_algorithm.grid(row=3, column=1)
 		# train_the_algorithm.pack(side='bottom')
 
 	def trainButton(self): 
@@ -29,7 +33,7 @@ class AddOrEditUserWindow(tk.Frame):
 
 		firstNameEntry = tk.Entry(self, width=25)
 		firstNameEntry["textvariable"] = self.firstName
-		firstNameEntry.grid(row=0, column=1, padx=1, pady=1)
+		firstNameEntry.grid(row=0, column=1, columnspan=2, padx=1, pady=1)
 		# firstNameEntry.pack(side="left")
 
 
@@ -39,7 +43,7 @@ class AddOrEditUserWindow(tk.Frame):
 
 		lastNameEntry = tk.Entry(self, width=25)
 		lastNameEntry["textvariable"] = self.lastName
-		lastNameEntry.grid(row=1, column=1)
+		lastNameEntry.grid(row=1, column=1, columnspan=2)
 		# lastNameEntry.pack(side='left')
 
 
@@ -52,4 +56,12 @@ class AddOrEditUserWindow(tk.Frame):
 		classificationMenu = tk.OptionMenu(self, classificationVar, *classificationLevels)
 		# classificationMenu.pack(side='left')
 		classificationMenu.grid(row = 2, column = 1)
+	
+	def create_back_button(self):
+		back_button = tk.Button(self, text="Back", command=lambda:self.controller.show_frame(mw.MainWindow))
+		back_button.grid(row=3, column=0)
+
+	def create_save_button(self): 
+		save_button = tk.Button(self, text="Save")
+		save_button.grid(row=3, column=2)
 	
