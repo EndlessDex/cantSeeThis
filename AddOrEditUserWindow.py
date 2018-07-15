@@ -1,9 +1,9 @@
 import tkinter as tk 
 
 class AddOrEditUserWindow(tk.Frame): 
-
 	def __init__(self, parent, controller):	
 		tk.Frame.__init__(self, parent)
+		print("init function")
 		self.firstName = tk.StringVar() 
 		self.lastName = tk.StringVar()
 		self.classificationEntry = tk.StringVar()

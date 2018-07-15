@@ -16,12 +16,12 @@ class CantSeeThisApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (mw.MainWindow, aw.AddOrEditUserWindow):
-           frame = F(self.container, self)
-           self.frames[F] = frame
-           frame.grid(row=0, column=0, sticky="nsew")
+        # for F in (mw.MainWindow, aw.AddOrEditUserWindow):
+        #    frame = F(self.container, self)
+        #    self.frames[F] = frame
+        #    frame.grid(row=0, column=0, sticky="nsew")
 
-        # self.create_frame_dictionary()
+        self.create_frame_dictionary()
         self.show_frame(mw.MainWindow)
 
     def create_frame_dictionary(self):
@@ -29,12 +29,13 @@ class CantSeeThisApp(tk.Tk):
         frame.grid(row=0, column=0, sticky="nsew")
         self.frames[mw.MainWindow] = frame
 
-        frame = aw.AddOrEditUserWindow(tk.Frame(self), self)
+        frame = aw.AddOrEditUserWindow(self.container, self)
         frame.grid(row=0, column=0, sticky="nsew")
         self.frames[aw.AddOrEditUserWindow] = frame
 
     def show_frame(self, cont):
-        print(self.frames)
+        print(cont)
+        print(self.frames.get(cont))
         frame = self.frames[cont]
         frame.tkraise()
 # <<<<<<< HEAD
