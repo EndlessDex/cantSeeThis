@@ -105,3 +105,6 @@ venv.bak/
 
 # Excel backup files:
 ~$*
+
+# Pycharm Ignores
+.idea/
