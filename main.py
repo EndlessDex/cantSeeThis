@@ -1,10 +1,13 @@
 import tkinter as tk
 import AddOrEditUserWindow as aw
 import MainWindow as mw
+from database.PeopleDatabase import PeopleDatabase
 
 
 class CantSeeThisApp(tk.Tk):
     def __init__(self, *args, **kwargs):
+        self.pdb = PeopleDatabase("database/test.xlsx");
+
         tk.Tk.__init__(self, *args, **kwargs)
         self.geometry("270x340")
 
@@ -16,20 +19,20 @@ class CantSeeThisApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (mw.MainWindow, aw.AddOrEditUserWindow):
-           frame = F(self.container, self)
-           self.frames[F] = frame
-           frame.grid(row=0, column=0, sticky="nsew")
+        # for F in (mw.MainWindow, aw.AddOrEditUserWindow):
+        #     frame = F(self.container, self, pdb)
+        #     self.frames[F] = frame
+        #     frame.grid(row=0, column=0, sticky="nsew")
 
-        # self.create_frame_dictionary()
+        self.create_frame_dictionary()
         self.show_frame(mw.MainWindow)
 
     def create_frame_dictionary(self):
-        frame = mw.MainWindow(self.container, self)
+        frame = mw.MainWindow(self.container, self, self.pdb)
         frame.grid(row=0, column=0, sticky="nsew")
         self.frames[mw.MainWindow] = frame
 
-        frame = aw.AddOrEditUserWindow(tk.Frame(self), self)
+        frame = aw.AddOrEditUserWindow(self.container, self)
         frame.grid(row=0, column=0, sticky="nsew")
         self.frames[aw.AddOrEditUserWindow] = frame
 
@@ -37,6 +40,7 @@ class CantSeeThisApp(tk.Tk):
         print(self.frames)
         frame = self.frames[cont]
         frame.tkraise()
+
 # <<<<<<< HEAD
 #         frame = aw.AddOrEditUserWindow(container, self)
 #         self.frames[AddOrEditUserWindow] = frame
@@ -48,9 +52,6 @@ class CantSeeThisApp(tk.Tk):
 #         frame.grid(row=0, column=0, sticky="nsew")
 #         self.show_frame(mw.MainWindow)
 # >>>>>>> 74c45726fab391bfc2b6384126e435f6371fa8be
-
-	
-
 
 app = CantSeeThisApp()
 app.mainloop()

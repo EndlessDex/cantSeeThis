@@ -1,5 +1,6 @@
 import tkinter as tk
 import AddOrEditUserWindow as aw
+from database.PeopleDatabase import PeopleDatabase
 
 LARGE_FONT = ("Arial Black", 12)
 
@@ -8,10 +9,11 @@ class MainWindow(tk.Frame):
     users = {"John Doe": "John Doe", "Jane Smith": "Jane Smith", "Someother Guy": "Someother Guy"}
     user_list = None
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, pdb):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.controller = controller
+        self.pdb = pdb
         self.draw()
 
     def draw(self):
@@ -22,7 +24,6 @@ class MainWindow(tk.Frame):
         # user list
         scrollbar = tk.Scrollbar(self, orient="vertical")
 
-
         self.user_list = tk.Listbox(self, height=10, width=36, yscrollcommand=scrollbar.set, selectmode=tk.SINGLE)
         self._fill_user_list()
         self.user_list.grid(row=1, padx=(1, 0), columnspan=3)
@@ -31,7 +32,7 @@ class MainWindow(tk.Frame):
         scrollbar.grid(row=1, column=3, padx=(0, 10), sticky=tk.N + tk.S)
 
         # buttons
-        add_user_button = tk.Button(self, text="Add User", command=self.controller.show_frame(aw.AddOrEditUserWindow))
+        add_user_button = tk.Button(self, text="Add User", command=lambda: self.controller.show_frame(aw.AddOrEditUserWindow))
         add_user_button.grid(row=2, column=0, padx=(10, 1), pady=10)
 
         remove_user_button = tk.Button(self, text="Remove User", command=self.remove_user)
@@ -58,5 +59,5 @@ class MainWindow(tk.Frame):
         print("Enable protection button pushed")
 
     def _fill_user_list(self):
-        for user in self.users.keys():
+        for user in self.pdb.get_people():
             self.user_list.insert(0, user)

@@ -9,7 +9,7 @@ namesIdx = "people"
 
 # Example usage:
 # from database.PeopleDatabase import PeopleDatabase
-# pdb = PeopleDatabase("database/test.xlsx");
+# pdb = PeopleDatabase("database/test.xlsx")
 
 
 class PeopleDatabase:
