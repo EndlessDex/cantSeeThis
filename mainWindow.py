@@ -24,6 +24,7 @@ class MainWindow(tk.Frame):
         user_list.place(x=10, y=50, in_=self)
         scrollbar.place(x=205, y=50, in_=self)
 
+
         # buttons
         firstRow = 220
         secondRow = 250

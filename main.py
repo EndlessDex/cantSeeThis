@@ -11,15 +11,17 @@ class CantSeeThisApp(tk.Tk):
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
 
-        container.grid_rowconfigure(1, weight=1)
-        container.grid_columnconfigure(1, weight=1)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
 
-       for F in (MainWindow, AddOrEditUserWindow):
+        for F in (mw.MainWindow, aw.AddOrEditUserWindow):
            frame = F(container, self)
            self.frames[F] = frame
            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame(mw.MainWindow)
 
 # <<<<<<< HEAD
 #         frame = aw.AddOrEditUserWindow(container, self)
@@ -40,5 +42,4 @@ class CantSeeThisApp(tk.Tk):
 
 
 app = CantSeeThisApp()
-# app.geometry("500x500")
 app.mainloop()
