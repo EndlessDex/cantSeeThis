@@ -8,21 +8,38 @@ class CantSeeThisApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.geometry("230x350")
 
-        container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand=True)
+        self.container = tk.Frame(self)
+        self.container.pack(side="top", fill="both", expand=True)
 
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
 
         for F in (mw.MainWindow, aw.AddOrEditUserWindow):
-           frame = F(container, self)
+           frame = F(self.container, self)
            self.frames[F] = frame
            frame.grid(row=0, column=0, sticky="nsew")
 
+        # self.create_frame_dictionary()
         self.show_frame(mw.MainWindow)
 
+    def create_frame_dictionary(self):
+        frame = mw.MainWindow(self.container, self)
+        frame.grid(row=0, column=0, sticky="nsew")
+        self.frames[mw.MainWindow] = frame
+
+        frame = aw.AddOrEditUserWindow(tk.Frame(self), self)
+        frame.grid(row=0, column=0, sticky="nsew")
+        self.frames[aw.AddOrEditUserWindow] = frame
+
+    def show_frame(self, cont):
+        if cont == aw.AddOrEditUserWindow: 
+            print('bleh')
+            fb = tk.Frame()
+        print(self.frames)
+        frame = self.frames[cont]
+        frame.tkraise()
 # <<<<<<< HEAD
 #         frame = aw.AddOrEditUserWindow(container, self)
 #         self.frames[AddOrEditUserWindow] = frame
@@ -35,10 +52,7 @@ class CantSeeThisApp(tk.Tk):
 #         self.show_frame(mw.MainWindow)
 # >>>>>>> 74c45726fab391bfc2b6384126e435f6371fa8be
 
-    def show_frame(self, cont):
-
-        frame = self.frames[cont]
-        frame.tkraise()
+	
 
 
 app = CantSeeThisApp()

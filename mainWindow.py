@@ -1,4 +1,5 @@
 import tkinter as tk
+import AddOrEditUserWindow as aw
 
 
 LARGE_FONT = ("Arial Black", 12)
@@ -8,6 +9,8 @@ class MainWindow(tk.Frame):
     users = {"John Doe": "John Doe", "Jane Smith": "Jane Smith", "Someother Guy": "Someother Guy"}
 
     def __init__(self, parent, controller):
+        self.parent = parent
+        self.controller = controller
         tk.Frame.__init__(self, parent)
         self.draw()
 
@@ -29,7 +32,7 @@ class MainWindow(tk.Frame):
         firstRow = 220
         secondRow = 250
 
-        add_user_button = tk.Button(self, text="Add User", command=self.add_user)
+        add_user_button = tk.Button(self, text="Add User", command=lambda:self.controller.show_frame(aw.AddOrEditUserWindow))
         add_user_button.place(x=10, y=firstRow, in_=self)
 
         remove_user_button = tk.Button(self, text="Remove User", command=self.remove_user)
@@ -43,6 +46,8 @@ class MainWindow(tk.Frame):
 
     def add_user(self):
         print("Add user pushed")
+        window = tk.Toplevel(self.parent)
+        aw.AddOrEditUserWindow(self)
 
     def remove_user(self):
         print("Remove user button pushed")

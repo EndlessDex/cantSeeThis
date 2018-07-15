@@ -1,6 +1,7 @@
 import tkinter as tk 
 
 class AddOrEditUserWindow(tk.Frame): 
+
 	def __init__(self, parent, controller):	
 		tk.Frame.__init__(self, parent)
 		self.firstName = tk.StringVar() 
