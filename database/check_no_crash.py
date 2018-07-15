@@ -37,3 +37,9 @@ if 11 not in [y for x, y in pdb.get_people()]:
     print("fail: ID 11 should have been added")
 if not pdb.has_permission(11, "None"):
     print("fail: ID 11 should have clearance again.")
+
+pdb.edit_user_name(11, "Person D", disable_sync=True)
+if "Person D" not in [x for x, y in pdb.get_people()]:
+    print("fail: ID 11 name not edited")
+if "Person B" in [x for x, y in pdb.get_people()]:
+    print("fail: ID 11 old name still there.")

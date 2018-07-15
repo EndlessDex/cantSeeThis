@@ -51,6 +51,10 @@ class PeopleDatabase:
         person_has_permission = self.clearance_db[permission] == num
         return not self.clearance_db[person_has_permission].empty
 
+    def get_person_permissions(self, num):
+        return [permission for permission in self.get_permissions() if self.has_permission(num, permission)]
+
+
     def set_person_permission(self, person, permission, remove=False, **kwargs):
         """
         Sets permission for a person (ID). If remove is True it removes that permission for person.
@@ -60,6 +64,7 @@ class PeopleDatabase:
         :param remove: If True: un-sets permission for person. If False, sets permission for person.
         :return: True on success.
         """
+        # TODO does not do permission remap.
         if remove:
             return self.remove_person_permission(person, permission)
 
@@ -91,6 +96,7 @@ class PeopleDatabase:
         :param permission: Name of permission.
         :return: True if succeed.
         """
+        #TODO does not remap permissions.
         # Check that permission exists:
         if permission not in self.clearance_db.columns:
             return False
@@ -109,7 +115,8 @@ class PeopleDatabase:
     def add_person(self, num, name, facedata, permissions=(), **kwargs):
         """
         Adds a new person with names of permission belonging to.
-        :param  num: ID Number
+        :param  num: ID Number as int.
+        :param name: String name of person.
         :param facedata: data used to recognize person.
         :param permissions: List of permission categories to add to.
         :return: True if successful. No changes are written if failed.
@@ -117,6 +124,9 @@ class PeopleDatabase:
         # If permissions is not iterable, then put it inside of an iterable.
         if not hasattr(permissions, "__iter__") or type(permissions) is str:
             permissions = (permissions, )
+
+        # TODO burn this code with fire.
+        permissions = remap_permissions_add(permissions)
 
         # Verify that all permissions exist.
         for permission in permissions:
@@ -174,6 +184,7 @@ class PeopleDatabase:
         :param people: List of people (by ID Number) to add.
         :return: True if successful. No changes written on failure.
         """
+        # TODO does not work with remap permissions.
         # If people is not iterable, then put it inside of an iterable.
         if not hasattr(people, "__iter__") or type(people) is str:
             people = (people,)
@@ -195,6 +206,19 @@ class PeopleDatabase:
 
         return self._sync(**kwargs)
 
+    def edit_user_name(self, user_id, new_name, **kwargs):
+        # Verify that num already exists.
+        if self.people_db["numbers"][self.people_db["numbers"] == user_id].empty:
+            return False
+
+        ids_col = self.people_db["numbers"]
+
+        # Now find the person and replace with NaN.
+        personidx = ids_col.index[ids_col == user_id][0]
+        self.people_db.ix[personidx, "names"] = new_name
+
+        return self._sync(**kwargs)
+
     def _sync(self, disable_sync=False):
         """
         Writes any changes back to file on disk.
@@ -210,3 +234,25 @@ class PeopleDatabase:
 
         # Gotta love always succeeds. Perfectly safe.
         return True
+
+
+def permission_to_num(permission):
+    if permission == "None":
+        return 0
+    if permission == "Secret":
+        return 1
+    if permission == "Top-secret":
+        return 2
+
+
+def remap_permissions_add(permissions):
+    if len(permissions) > 1:
+        return permissions
+
+    if "Top-secret" == permissions[0]:
+        return ["None", "Secret", "Top-secret"]
+
+    if "Secret" == permissions[0]:
+        return ["None", "Secret"]
+
+    return permissions
