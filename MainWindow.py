@@ -60,4 +60,4 @@ class MainWindow(tk.Frame):
 
     def _fill_user_list(self):
         for user in self.pdb.get_people():
-            self.user_list.insert(0, user)
+            self.user_list.insert(0, user[0])
