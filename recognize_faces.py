@@ -8,8 +8,7 @@ import numpy as np
 from imutils import paths
 
 
-def capture_faces():
-    name = input("Please enter ID: ")
+def capture_faces(name):
     cam = cv2.VideoCapture(0)
     total = 0
 
@@ -42,6 +41,8 @@ def capture_faces():
         # if the `q` key was pressed, break from the loop
         elif key == ord("q"):
             break
+    encode_faces(name)
+    cv2.destroyAllWindows()
 
 
 def encode_faces():
@@ -70,7 +71,20 @@ def encode_faces():
         f.write(pickle.dumps(data))
 
 
-def recognize_faces(scale, show=False, block=True):
+def check_clearence(names, pdb, mode_selection_field):
+    permission = mode_selection_field.get()
+
+    if permission == "None":
+        return True
+
+    for name in names:
+        if name == "Unknown" or not pdb.has_permission(int(name), permission):
+            return False
+
+    return True
+
+
+def recognize_faces(scale, pdb, mode_selection_field, show=False, block=True):
     data = pickle.loads(open("encodings.pkl", "rb").read())
     cam = cv2.VideoCapture(0)
     nospy = cv2.imread("no-spy.jpg")
@@ -117,7 +131,7 @@ def recognize_faces(scale, show=False, block=True):
             cv2.imshow("Frame", frame)
 
         if block:
-            if list(filter(lambda n: n == "00001", names)):
+            if not check_clearence(names, pdb, mode_selection_field):
                 cv2.namedWindow("WARNING", cv2.WND_PROP_FULLSCREEN)
                 cv2.setWindowProperty("WARNING", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
                 cv2.imshow("WARNING", nospy)
@@ -128,9 +142,10 @@ def recognize_faces(scale, show=False, block=True):
         if key == ord("q"):
             break
 
-        time.sleep(max(0.0, 1.0 - (time.time() - start_time)))
+        # time.sleep(max(0.0, 0.25 - (time.time() - start_time)))
+    cv2.destroyAllWindows()
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # capture_faces()
     # encode_faces()
-    recognize_faces(0.5)
+    # recognize_faces(0.5)

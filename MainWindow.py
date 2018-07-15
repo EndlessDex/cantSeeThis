@@ -1,6 +1,7 @@
 import tkinter as tk
 import AddOrEditUserWindow as aw
 from database.PeopleDatabase import PeopleDatabase
+import recognize_faces
 
 LARGE_FONT = ("Arial Black", 12)
 
@@ -30,7 +31,8 @@ class MainWindow(tk.Frame):
         scrollbar.grid(row=1, column=3, padx=(0, 10), sticky=tk.N + tk.S)
 
         # buttons
-        add_user_button = tk.Button(self, text="Add User", command=lambda:self.controller.show_frame(aw.AddOrEditUserWindow))
+        add_user_button = tk.Button(self, text="Add User",
+                                    command=lambda: self.controller.show_frame(aw.AddOrEditUserWindow))
         add_user_button.grid(row=2, column=0, padx=(10, 1), pady=10)
 
         remove_user_button = tk.Button(self, text="Remove User", command=self.remove_user)
@@ -51,21 +53,21 @@ class MainWindow(tk.Frame):
         protection_mode_dropdown.grid(row=4, column=1)
 
     def remove_user(self):
-        selected = self.user_list.curselection()
-        self.pdb.remove_person(self.users[selected])
-        del self.users[selected]
+        selected = self.user_list.curselection()[0]
+        self.pdb.remove_person(self.users[self.user_list.get(self.user_list.curselection())])
+        del self.users[self.user_list.get(self.user_list.curselection())]
         self.user_list.delete(selected)
 
     def edit_user(self):
         print("Edit user button pushed")
-        if self.user_list.curselection(): 
+        if self.user_list.curselection():
             print("Trying to edit", self.user_list.get(self.user_list.curselection()))
             print(self.users[self.user_list.get(self.user_list.curselection())])
             self.controller.show_add_or_edit_user_window(self.users[self.user_list.get(self.user_list.curselection())])
 
-
     def enable_protection(self):
         print("Enable protection button pushed")
+        recognize_faces.recognize_faces(0.5, self.pdb, self.protection_mode, show=True)
 
     def refresh_user_list(self):
         self.user_list.delete(0, tk.END)

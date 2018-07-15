@@ -2,11 +2,12 @@ import tkinter as tk
 import AddOrEditUserWindow as aw
 import MainWindow as mw
 from database.PeopleDatabase import PeopleDatabase
+import recognize_faces
 
 
 class CantSeeThisApp(tk.Tk):
     def __init__(self, *args, **kwargs):
-        self.pdb = PeopleDatabase("database/test.xlsx");
+        self.pdb = PeopleDatabase("database/test.xlsx")
 
         tk.Tk.__init__(self, *args, **kwargs)
         self.geometry("370x340")
@@ -41,19 +42,21 @@ class CantSeeThisApp(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-    def show_mainWindow(self): 
+    def show_mainWindow(self):
         frame = self.frames[mw.MainWindow]
         frame.refresh_user_list()
         frame.tkraise()
 
-    def show_add_or_edit_user_window(self, employeeId = 0): 
+    def show_add_or_edit_user_window(self, employeeId=0):
         frame = self.frames[aw.AddOrEditUserWindow]
-        if employeeId: 
+        if employeeId:
             frame.load_user(employeeId)
-        else: 
+        else:
             frame.refresh_window()
-            #Add User
+            # Add User
         frame.tkraise()
 
-app = CantSeeThisApp()
-app.mainloop()
+
+if __name__ == '__main__':
+    app = CantSeeThisApp()
+    app.mainloop()
