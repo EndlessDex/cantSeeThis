@@ -75,7 +75,8 @@ class AddOrEditUserWindow(tk.Frame):
 		name = self.firstName.get() + " " + self.lastName.get()
 		facedata = 0
 		if not self.newUser: 
-			self.pdb.remove_person(self.employeeId.get())
+			print("User is being removed")
+			print(self.pdb.remove_person(self.employeeId.get()))
 		print(self.pdb.add_person(int(self.employeeId.get()), name, facedata, self.clearanceVar.get()))
 
 	def load_user(self, employeeId): 
@@ -103,7 +104,6 @@ class AddOrEditUserWindow(tk.Frame):
 			clearanceVar = "Secret"
 		else: 
 			clearanceVar = "None"
-
 		return clearanceVar
 
 	def refresh_window(self): 

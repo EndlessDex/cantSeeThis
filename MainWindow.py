@@ -42,6 +42,14 @@ class MainWindow(tk.Frame):
         enable_button = tk.Button(self, text="Enable Protection", command=self.enable_protection)
         enable_button.grid(row=3, column=1, padx=1, pady=10)
 
+        protection_label = tk.Label(self, text="Protection Mode")
+        protection_label.grid(row=4, column=0, padx=1, pady=1)
+        protection_modes = {"None", "Top-secret", "Secret"}
+        self.protection_mode = tk.StringVar()
+        self.protection_mode.set("None")
+        protection_mode_dropdown = tk.OptionMenu(self, self.protection_mode, *protection_modes)
+        protection_mode_dropdown.grid(row=4, column=1)
+
     def remove_user(self):
         selected = self.user_list.curselection()
         self.pdb.remove_person(self.users[selected])
