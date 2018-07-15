@@ -1,11 +1,14 @@
 import tkinter as tk
-import MainWindow
+import MainWindow as mw
+
 
 class CantSeeThisApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        self.geometry("230x350")
+
         container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand = True)
+        container.pack(side="top", fill="both", expand=True)
 
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
@@ -17,10 +20,10 @@ class CantSeeThisApp(tk.Tk):
 #            self.frames[F] = frame
 #            frame.grid(row=0, column=0, sticky="nsew")
 
-        frame = MainWindow(container, self)
-        self.frames[MainWindow] = frame
+        frame = mw.MainWindow(container, self)
+        self.frames[mw.MainWindow] = frame
         frame.grid(row=0, column=0, sticky="nsew")
-        self.show_frame(MainWindow)
+        self.show_frame(mw.MainWindow)
 
     def show_frame(self, cont):
 
