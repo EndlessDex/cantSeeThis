@@ -32,7 +32,7 @@ class CantSeeThisApp(tk.Tk):
         frame.grid(row=0, column=0, sticky="nsew")
         self.frames[mw.MainWindow] = frame
 
-        frame = aw.AddOrEditUserWindow(self.container, self)
+        frame = aw.AddOrEditUserWindow(self.container, self, self.pdb)
         frame.grid(row=0, column=0, sticky="nsew")
         self.frames[aw.AddOrEditUserWindow] = frame
 
