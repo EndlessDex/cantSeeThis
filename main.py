@@ -5,7 +5,7 @@ import MainWindow as mw
 class CantSeeThisApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        self.geometry("230x350")
+        self.geometry("270x340")
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
