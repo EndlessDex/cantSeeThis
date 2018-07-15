@@ -51,7 +51,7 @@ class PeopleDatabase:
         person_has_permission = self.clearance_db[permission] == num
         return not self.clearance_db[person_has_permission].empty
 
-    def set_person_permission(self, person, permission, remove=False):
+    def set_person_permission(self, person, permission, remove=False, **kwargs):
         """
         Sets permission for a person (ID). If remove is True it removes that permission for person.
         Person and permission must exist.
@@ -82,10 +82,9 @@ class PeopleDatabase:
 
         self.clearance_db.ix[nanidx, permission] = person
 
-        self._sync()
-        return
+        return self._sync(**kwargs)
 
-    def remove_person_permission(self, person, permission):
+    def remove_person_permission(self, person, permission, **kwargs):
         """
         Removes a permission from a person.
         :param person: ID of person.
@@ -105,9 +104,9 @@ class PeopleDatabase:
         personidx = clearance_col.index[clearance_col == person][0]
         self.clearance_db.ix[personidx, permission] = np.nan
 
-        self._sync()
+        return self._sync(**kwargs)
 
-    def add_person(self, num, name, facedata, permissions=()):
+    def add_person(self, num, name, facedata, permissions=(), **kwargs):
         """
         Adds a new person with names of permission belonging to.
         :param  num: ID Number
@@ -151,10 +150,9 @@ class PeopleDatabase:
                                                ignore_index=True)
 
         # Write to disk.
-        self._sync()
-        pass
+        return self._sync(**kwargs)
 
-    def remove_person(self, person):
+    def remove_person(self, person, **kwargs):
         """
         Removes a person from the pandas table.
         :param person: ID of person to remove.
@@ -167,10 +165,9 @@ class PeopleDatabase:
         # Remove the row corresponding to the nan.
         self.people_db = self.people_db.dropna()
 
-        self._sync()
-        pass
+        return self._sync(**kwargs)
 
-    def add_permission(self, permission, people=()):
+    def add_permission(self, permission, people=(), **kwargs):
         """
         Adds a new permission category with names of people to add.
         :param permission: Name of permission.
@@ -196,12 +193,20 @@ class PeopleDatabase:
         # Combine with existing dataFrame
         self.clearance_db = pd.concat([self.clearance_db, dfnew], axis=1)
 
-        self._sync()
-        pass
+        return self._sync(**kwargs)
 
-    def _sync(self):
+    def _sync(self, disable_sync=False):
         """
         Writes any changes back to file on disk.
         :return: True on success. Hopefully no changes written on failure.
         """
-        pass
+        if disable_sync:
+            return True
+
+        writer = pd.ExcelWriter(self.db_name)
+        self.clearance_db.to_excel(writer, sheet_name=clearanceIdx, index=False, header=True)
+        self.people_db.to_excel(writer, sheet_name=namesIdx, index=False, header=True)
+        writer.save()
+
+        # Gotta love always succeeds. Perfectly safe.
+        return True
