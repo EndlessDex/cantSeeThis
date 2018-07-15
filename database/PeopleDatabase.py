@@ -9,7 +9,7 @@ namesIdx = "people"
 
 # Example usage:
 # from database.PeopleDatabase import PeopleDatabase
-# pdb = peopleDatabase("database/test.xlsx");
+# pdb = PeopleDatabase("database/test.xlsx");
 
 
 class PeopleDatabase:
@@ -37,6 +37,12 @@ class PeopleDatabase:
         return list(zip(names, ids))
 
     def has_permission(self, num, permission):
+        """
+        Checks if an ID has permission.
+        :param num: ID Number
+        :param permission: Name of clearance.
+        :return: True if person and permission exist and person has permission.
+        """
         # Check that the permission exists.
         if permission not in self.clearance_db.columns:
             return False
@@ -76,6 +82,12 @@ class PeopleDatabase:
         return
 
     def remove_person_permission(self, person, permission):
+        """
+        Removes a permission from a person.
+        :param person: ID of person.
+        :param permission: Name of permission.
+        :return: True if succeed.
+        """
         # Check that permission exists:
         if permission not in self.clearance_db.columns:
             return False
@@ -99,9 +111,18 @@ class PeopleDatabase:
         :param permissions: List of permission categories to add to.
         :return: True if successful. No changes are written if failed.
         """
+        # If permissions is not iterable, then put it inside of an iterable.
+        if not hasattr(permissions, "__iter__") or type(permissions) is str:
+            permissions = (permissions, )
+
         # Verify that all permissions exist.
+        for permission in permissions:
+            if permission not in self.clearance_db.columns:
+                return False
 
         # Verify that num does not already exist.
+        if not self.people_db["numbers"][self.people_db["numbers"] == num].empty:
+            return False
 
         # Iterate through each permission (TODO this is bad).
         # ALSO TODO remove code duplication.
@@ -110,7 +131,7 @@ class PeopleDatabase:
             if not self.clearance_db[permission].hasnans:
                 # No Nans, so append a row to the DB
                 self.clearance_db = self.clearance_db.append(Series([np.nan],
-                                                                       index=[permission]),
+                                                             index=[permission]),
                                                              ignore_index=True)
 
             # Now find the nan and replace with the
@@ -125,6 +146,22 @@ class PeopleDatabase:
         self._sync()
         pass
 
+    def remove_person(self, person):
+        """
+        Removes a person from the pandas table.
+        :param person: ID of person to remove.
+        :return: True on succeed
+        """
+        # Remove the person from permission table.
+        self.clearance_db[self.clearance_db == person] = np.nan
+        self.people_db[self.people_db == person] = np.nan
+
+        # Remove the row corresponding to the nan.
+        self.people_db = self.people_db.dropna()
+
+        self._sync()
+        pass
+
     def add_permission(self, permission, people=()):
         """
         Adds a new permission category with names of people to add.
@@ -132,6 +169,10 @@ class PeopleDatabase:
         :param people: List of people (by ID Number) to add.
         :return: True if successful. No changes written on failure.
         """
+        # If people is not iterable, then put it inside of an iterable.
+        if not hasattr(people, "__iter__") or type(people) is str:
+            people = (people,)
+
         # Verify that the permission does not exist.
         if permission in self.clearance_db.columns:
             return False
