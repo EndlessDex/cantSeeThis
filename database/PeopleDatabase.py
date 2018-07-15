@@ -195,6 +195,20 @@ class PeopleDatabase:
 
         return self._sync(**kwargs)
 
+    def edit_user_name(self, user_id, new_name, **kwargs):
+        # Verify that num already exists.
+        if self.people_db["numbers"][self.people_db["numbers"] == user_id].empty:
+            return False
+
+        ids_col = self.people_db["numbers"]
+
+        # Now find the person and replace with NaN.
+        personidx = ids_col.index[ids_col == user_id][0]
+        self.people_db.ix[personidx, "names"] = new_name
+
+        return self._sync(**kwargs)
+
+
     def _sync(self, disable_sync=False):
         """
         Writes any changes back to file on disk.
