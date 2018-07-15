@@ -20,9 +20,9 @@ class CantSeeThisApp(tk.Tk):
         self.frames = {}
 
         # for F in (mw.MainWindow, aw.AddOrEditUserWindow):
-        #     frame = F(self.container, self, pdb)
-        #     self.frames[F] = frame
-        #     frame.grid(row=0, column=0, sticky="nsew")
+        #    frame = F(self.container, self)
+        #    self.frames[F] = frame
+        #    frame.grid(row=0, column=0, sticky="nsew")
 
         self.create_frame_dictionary()
         self.show_frame(mw.MainWindow)
