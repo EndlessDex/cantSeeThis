@@ -74,8 +74,8 @@ class AddOrEditUserWindow(tk.Frame):
 		print(self.clearanceVar.get())
 		name = self.firstName.get() + " " + self.lastName.get()
 		facedata = 0
-		# if !(self.newUser): 
-		# 	self.pdb.remove_person(self.eemployeeId.get())
+		if not self.newUser: 
+			self.pdb.remove_person(self.employeeId.get())
 		print(self.pdb.add_person(int(self.employeeId.get()), name, facedata, self.clearanceVar.get()))
 
 	def load_user(self, employeeId): 
@@ -90,16 +90,21 @@ class AddOrEditUserWindow(tk.Frame):
 			self.firstName.set(name[0])
 			self.lastName.set(name[-1])
 			self.employeeId.set(user_to_be_loaded[1])
+			clearanceVar = self.find_clearance(employeeId)
+			self.clearanceVar.set(clearanceVar)
 
-	# def find_clearance(self, employeeId): 
-	# 	clearanceVar = ""
-	# 	permissions = self.pdb.has_permission(employeeId)
-	# 	if self.pdb.has_permission(employeeId, "None"):
-	# 		clearanceVar = "None"
-	# 	elif self.pdb.has_permission(employeeId, "Secret"): 
-	# 		clearanceVar = "Secret"
-	# 	elif self.pdb.
+	def find_clearance(self, employeeId): 
+		clearanceVar = ""
+		permissions = self.pdb.get_person_permissions(employeeId)
 
+		if "Top-secret" in permissions: 
+			clearanceVar = "Top-secret"
+		elif "Secret" in permissions: 
+			clearanceVar = "Secret"
+		else: 
+			clearanceVar = "None"
+
+		return clearanceVar
 
 	def refresh_window(self): 
 		self.firstName = tk.StringVar()
