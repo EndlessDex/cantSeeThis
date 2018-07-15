@@ -56,12 +56,16 @@ class AddOrEditUserWindow(tk.Frame):
 		train_the_algorithm.grid(row=4, column=1)
 
 	def create_back_button(self):
-		back_button = tk.Button(self, text="Back", command=lambda:self.controller.show_frame(mw.MainWindow))
+		back_button = tk.Button(self, text="Back", command=self.controller.show_mainWindow)
 		back_button.grid(row=4, column=0)
 
 	def create_save_button(self): 
 		save_button = tk.Button(self, text="Save", command=self.save_user)
 		save_button.grid(row=4, column=2)
+
+	def go_back_to_main_window(self): 
+		mw.MainWindow.refresh_user_list()
+		self.controller.show_frame(mw.MainWindow)
 
 	def save_user(self): 
 		print(self.firstName.get())

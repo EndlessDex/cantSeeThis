@@ -41,5 +41,10 @@ class CantSeeThisApp(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
+    def show_mainWindow(self): 
+    	frame = self.frames[mw.MainWindow]
+    	frame.refresh_user_list()
+    	frame.tkraise()
+
 app = CantSeeThisApp()
 app.mainloop()

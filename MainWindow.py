@@ -25,7 +25,7 @@ class MainWindow(tk.Frame):
         scrollbar = tk.Scrollbar(self, orient="vertical")
 
         self.user_list = tk.Listbox(self, height=10, width=36, yscrollcommand=scrollbar.set, selectmode=tk.SINGLE)
-        self._fill_user_list()
+        self.refresh_user_list()
         self.user_list.grid(row=1, padx=(1, 0), columnspan=3)
 
         scrollbar.config(command=self.user_list.yview)
@@ -58,8 +58,8 @@ class MainWindow(tk.Frame):
         print("Enable protection button pushed")
 
     def refresh_user_list(self):
-        for user in self.users:
-            self.user_list.delete(user[0])
+        self.user_list.delete(0, tk.END)
+        self.users = {}
         self._fill_user_list()
 
     def _fill_user_list(self):
