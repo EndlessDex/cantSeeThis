@@ -1,4 +1,5 @@
 import tkinter as tk
+import AddOrEditUserWindow as aw
 
 LARGE_FONT = ("Arial Black", 12)
 
@@ -30,7 +31,7 @@ class MainWindow(tk.Frame):
         scrollbar.grid(row=1, column=3, padx=(0, 10), sticky=tk.N + tk.S)
 
         # buttons
-        add_user_button = tk.Button(self, text="Add User", command=self.add_user)
+        add_user_button = tk.Button(self, text="Add User", command=self.controller.show_frame(aw.AddOrEditUserWindow))
         add_user_button.grid(row=2, column=0, padx=(10, 1), pady=10)
 
         remove_user_button = tk.Button(self, text="Remove User", command=self.remove_user)
