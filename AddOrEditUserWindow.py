@@ -13,6 +13,7 @@ class AddOrEditUserWindow(tk.Frame):
 		self.lastName = tk.StringVar()
 		self.employeeId = tk.StringVar()
 		self.clearanceVar = tk.StringVar()
+		self.newUser = False
 		self.createTextFields()	
 		self.create_widgets()
 		self.create_back_button()
@@ -56,12 +57,16 @@ class AddOrEditUserWindow(tk.Frame):
 		train_the_algorithm.grid(row=4, column=1)
 
 	def create_back_button(self):
-		back_button = tk.Button(self, text="Back", command=lambda:self.controller.show_frame(mw.MainWindow))
+		back_button = tk.Button(self, text="Back", command=self.controller.show_mainWindow)
 		back_button.grid(row=4, column=0)
 
 	def create_save_button(self): 
 		save_button = tk.Button(self, text="Save", command=self.save_user)
 		save_button.grid(row=4, column=2)
+
+	def go_back_to_main_window(self): 
+		mw.MainWindow.refresh_user_list()
+		self.controller.show_frame(mw.MainWindow)
 
 	def save_user(self): 
 		print(self.firstName.get())
@@ -69,7 +74,45 @@ class AddOrEditUserWindow(tk.Frame):
 		print(self.clearanceVar.get())
 		name = self.firstName.get() + " " + self.lastName.get()
 		facedata = 0
+		if not self.newUser: 
+			self.pdb.remove_person(self.employeeId.get())
 		print(self.pdb.add_person(int(self.employeeId.get()), name, facedata, self.clearanceVar.get()))
+
+	def load_user(self, employeeId): 
+		print("User " + str(employeeId) + " is being loaded")
+		all_users = self.pdb.get_people()
+		user_to_be_loaded = ()
+		for pair in all_users: 
+			if pair[1] == employeeId: 
+				user_to_be_loaded = pair
+		if user_to_be_loaded: 
+			name = user_to_be_loaded[0].split()
+			self.firstName.set(name[0])
+			self.lastName.set(name[-1])
+			self.employeeId.set(user_to_be_loaded[1])
+			clearanceVar = self.find_clearance(employeeId)
+			self.clearanceVar.set(clearanceVar)
+
+	def find_clearance(self, employeeId): 
+		clearanceVar = ""
+		permissions = self.pdb.get_person_permissions(employeeId)
+
+		if "Top-secret" in permissions: 
+			clearanceVar = "Top-secret"
+		elif "Secret" in permissions: 
+			clearanceVar = "Secret"
+		else: 
+			clearanceVar = "None"
+
+		return clearanceVar
+
+	def refresh_window(self): 
+		self.firstName = tk.StringVar()
+		self.lastName = tk.stringVar()
+		self.employeeId = tk.stringVar()
+		self.clearanceVar.set("None")
+		self.newUser = True
+
 
 
 
